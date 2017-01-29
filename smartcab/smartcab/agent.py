@@ -30,9 +30,9 @@ In the next iteration
         
         # TODO: Initialize any additional variables here
         self.Q={}
-        self.alpha=1.0
-        self.gamma=0.5
-        self.epsilon=.8
+        self.alpha=.8
+        self.gamma=0.2
+        self.epsilon=.5
         self.total_reward=0
         self.policy=0
         self.next_state=None
@@ -67,21 +67,35 @@ In the next iteration
 
         for state in self.qtable:
             for actions in self.avaiable_actions:
+                if state == current_state and self.epsilon < random.randrange(0,2):
+                    #print "2", state
+                    #print "2",current_state, qtable[(state)], actions
+                    self.max_val = actions
+                    q_val = self.qtable[(state)][actions]
+                    #print 'I CHOSE PURPOSEFULLY'
                 if state == current_state and self.qtable[(state)][actions] > self.q_val:
                     #print "2", state
                     #print "2",current_state, qtable[(state)], actions
                     self.max_val = actions
                     q_val = self.qtable[(state)][actions]
-    
+                    #print 'I CHOSE PURPOSEFULLY'
+                else:
+                    self.max_val = random.choice(self.avaiable_actions)
+                    
+                    print 'I CHOSE RANDOMLY'
+                    #print state, current_state
         return self.max_val
             
     def mod_Q( self,state,action, reward):
-            if  state not in qtable:
+            if  state not in self.qtable:
                  self.qtable[(state)][action] = 0
-                 print "3", 
+                 #print "3", 
+                 
             else:
-                 self.qtable[(state)][action] += (1-alpha)*(qtable[(state)][action])+alpha*(reward+reward*qtable[(state)][action])
-                 print "3" , state, action
+                 #self.qtable[(state)][action] += (1-self.alpha)*(self.qtable[(state)][action])+self.alpha*(reward+self.gamma*self.qtable[(state)][action])
+                 self.qtable[(state)][action] += (self.qtable[(state)][action])+self.alpha*(reward+self.gamma*self.qtable[(state)][action])
+                 #print "3" , state, action
+                 #print self.qtable
 
             
     
@@ -101,26 +115,28 @@ In the next iteration
         state = ()
         for x,y in inputs.items():
             state = state + (y,)
-            print state
+            #print state
         state =  (self.next_waypoint,)    + state
-        print "state :",state
+        #print "state :",state
         #the states are as follows: 
         # TODO: Select action according to your policy
         #action = argmax(self, current_state, table)
         action = self.Qmax(state)
+        #print action
         
         # Execute action and get reward
         reward = self.env.act(self, action)
-
+        self.mod_Q(state,action, reward)
+        #print reward
         # TODO: Learn policy based on state, action, reward
         #argM_Q=max()
         #Q=(1-alpha)*Q+self.alpha*(reward+reward*argM_Q)
         #state=
         #Q=(1-alpha)*Q+alpha*(reward+reward*self.next_waypoint)
         #print Q
-        print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
-        print "Waypoint: {}".format(self.next_waypoint)
-        
+        #print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
+        #print "Waypoint: {}".format(self.next_waypoint)
+        #print self.qtable[(state)][action]
 
 def run():
     """Run the agent for a finite number of trials."""
@@ -128,11 +144,11 @@ def run():
     # Set up environment and agent
     e = Environment()  # create environment (also adds some dummy traffic)
     a = e.create_agent(LearningAgent)  # create agent
-    e.set_primary_agent(a, enforce_deadline=False)  # specify agent to track
+    e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
     # NOTE: You can set enforce_deadline=False while debugging to allow longer trials
 
     # Now simulate it
-    sim = Simulator(e, update_delay=0.5, display=False)  # create simulator (uses pygame when display=True, if available)
+    sim = Simulator(e, update_delay=0.005, display=True)  # create simulator (uses pygame when display=True, if available)
     # NOTE: To speed up simulation, reduce update_delay and/or set display=False
     
     sim.run(n_trials=100)  # run for a specified number of trials
