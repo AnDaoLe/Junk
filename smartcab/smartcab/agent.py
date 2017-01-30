@@ -30,9 +30,9 @@ In the next iteration
         
         # TODO: Initialize any additional variables here
         self.Q={}
-        self.alpha=.8
-        self.gamma=0.2
-        self.epsilon=.5
+        self.alpha=.5
+        self.gamma=0.3
+        self.epsilon=1.2
         self.total_reward=0
         self.policy=0
         self.next_state=None
@@ -70,8 +70,9 @@ In the next iteration
                 if state == current_state and self.epsilon < random.randrange(0,2):
                     #print "2", state
                     #print "2",current_state, qtable[(state)], actions
-                    self.max_val = actions
+                    self.max_val = random.choice(self.avaiable_actions)
                     q_val = self.qtable[(state)][actions]
+                    
                     #print 'I CHOSE PURPOSEFULLY'
                 if state == current_state and self.qtable[(state)][actions] > self.q_val:
                     #print "2", state
@@ -82,7 +83,7 @@ In the next iteration
                 else:
                     self.max_val = random.choice(self.avaiable_actions)
                     
-                    print 'I CHOSE RANDOMLY'
+                    #print 'I CHOSE RANDOMLY'
                     #print state, current_state
         return self.max_val
             
@@ -92,8 +93,16 @@ In the next iteration
                  #print "3", 
                  
             else:
-                 #self.qtable[(state)][action] += (1-self.alpha)*(self.qtable[(state)][action])+self.alpha*(reward+self.gamma*self.qtable[(state)][action])
-                 self.qtable[(state)][action] += (self.qtable[(state)][action])+self.alpha*(reward+self.gamma*self.qtable[(state)][action])
+                 nextpt = self.planner.next_waypoint() 
+                 inputs = self.env.sense(self)
+                 nxstate = ()
+                 for x,y in inputs.items():
+                    nxstate = nxstate + (y,)
+                    #print state
+                 nxstate =  (self.next_waypoint,)    + nxstate
+                 self.qtable[(state)][action] += (1-self.alpha)*(self.qtable[(state)][action])+self.alpha*(reward+self.gamma*self.qtable[(nxstate)][nextpt])
+                 #self.qtable[(state)][action] += reward+self.gamma*self.qtable[(state)][action]
+                 #print self.qtable[(state)][action]
                  #print "3" , state, action
                  #print self.qtable
 
