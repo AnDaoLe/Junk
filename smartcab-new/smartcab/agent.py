@@ -55,8 +55,24 @@ class LearningAgent(Agent):
         ########### 
         ## TO DO ##
         ###########
-        # Set 'state' as a tuple of relevant data for the agent        
-        state = None
+        # Set 'state' as a tuple of relevant data for the agent   
+        waypoints = ['forward', 'left', 'right']
+        trafficlight = ['red','green']
+        oncoming = [None, 'left', 'right', 'forward']
+        right = [None, 'left', 'right', 'forward']
+        left = [None, 'left', 'right', 'forward']
+        state = ()
+ 
+        self.q_val = 0
+        self.max_val = 0
+        for a in waypoints:
+                for b in trafficlight:
+                        for c in oncoming:
+                                for d in right:
+                                    for e in left:
+                                        state = (a,b,c,d,e)
+                                        
+        state = (' None, None,  None,  None )
 
         return state
 
@@ -95,7 +111,7 @@ class LearningAgent(Agent):
         # Set the agent state and default action
         self.state = state
         self.next_waypoint = self.planner.next_waypoint()
-        action = None
+        action = random.choice(self.valid_actions)
 
         ########### 
         ## TO DO ##
@@ -159,7 +175,7 @@ def run():
     # Follow the driving agent
     # Flags:
     #   enforce_deadline - set to True to enforce a deadline metric
-    env.set_primary_agent(agent)
+    env.set_primary_agent(agent, enforce_deadline=True)
 
     ##############
     # Create the simulation
@@ -168,14 +184,14 @@ def run():
     #   display      - set to False to disable the GUI if PyGame is enabled
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
-    sim = Simulator(env)
+    sim = Simulator(env, update_delay=.01, log_metrics=True)
     
     ##############
     # Run the simulator
     # Flags:
     #   tolerance  - epsilon tolerance before beginning testing, default is 0.05 
     #   n_test     - discrete number of testing trials to perform, default is 0
-    sim.run()
+    sim.run(n_test=10)
 
 
 if __name__ == '__main__':
