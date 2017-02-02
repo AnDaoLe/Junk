@@ -9,7 +9,7 @@ class LearningAgent(Agent):
     """ An agent that learns to drive in the Smartcab world.
         This is the object you will be modifying. """ 
 
-    def __init__(self, env, learning=False, epsilon=1.0, alpha=0.5):
+    def __init__(self, env, learning=False, epsilon=1.0, alpha=.1):
         super(LearningAgent, self).__init__(env)     # Set the agent in the evironment 
         self.planner = RoutePlanner(self.env, self)  # Create a route planner
         self.valid_actions = self.env.valid_actions  # The set of valid actions
@@ -19,7 +19,7 @@ class LearningAgent(Agent):
         self.Q = dict()          # Create a Q-table which will be a dictionary of tuples
         self.epsilon = epsilon   # Random exploration factor
         self.alpha = alpha       # Learning factor
-        self.q_val=0
+        self.n_test = 0
         ###########
         ## TO DO ##
         ###########
@@ -33,14 +33,21 @@ class LearningAgent(Agent):
 
         # Select the destination as the new location to route to
         self.planner.route_to(destination)
-        
+        self.n_test= self.n_test+1
+        self.alpha += 0.025
+        if (self.alpha < 0):
+            self.alpha = 0
+        if (self.alpha > 1):
+            self.alpha = 1
         ########### 
         ## TO DO ##
         ###########
         # Update epsilon using a decay function of your choice
         # Update additional class parameters as needed
         # If 'testing' is True, set epsilon and alpha to 0
-        self.epsilon = (self.epsilon-.05)
+#        self.epsilon = (self.epsilon-.05)
+        #self.epsilon = pow(self.alpha,self.n_test)
+        self.epsilon=math.exp(-.01*self.alpha*self.n_test)
         if (self.epsilon < 0):
             self.epsilon = 0
             
@@ -63,9 +70,9 @@ class LearningAgent(Agent):
         state = ()
         for x,y in inputs.items():
             state = state + (y,)
-            print state
+            #print state
         state =  (self.next_waypoint,)    + state[:2]
-        print state, "HOLA",
+        #print state, "HOLA",
         return state
 
 
@@ -78,10 +85,10 @@ class LearningAgent(Agent):
         ###########
         # Calculate the maximum Q-value of all actions for a given state
         
-        maxQ=0
+        maxQ=-10000000000000000000000000000
         for states in self.Q:
 
-                if states == state and self.Q[(states)] > self.q_val:
+                if states == state:
                     #print "2", state
                     #print "2",current_state, qtable[(state)], actions
                     for actions in self.valid_actions:
@@ -108,7 +115,7 @@ class LearningAgent(Agent):
                 self.Q[(state)] = dict()
                 for action in self.valid_actions: 
                     self.Q[(state)][action] = 0
-        print self.Q[(state)], state
+        #print self.Q[(state)], state
         return 
 
 
@@ -120,7 +127,8 @@ class LearningAgent(Agent):
         self.state = state
         self.next_waypoint = self.planner.next_waypoint()
         #rando = random.uniform(0,1)
-        rando=.5
+        rando=.35
+        #rando = random.uniform(.1, .3)
         ########### 
         ## TO DO ##
         ###########
@@ -132,23 +140,24 @@ class LearningAgent(Agent):
         else:
             for states in self.Q:
                 for actions in self.valid_actions:
-                    if states == state and self.epsilon > .5:
-                        print random.randrange(0,1)
+                    if states == state and self.epsilon > rando:
+                        #print random.randrange(0,1)
                         #print "2", state
                         #print "2",current_state, qtable[(state)], actions
                         action= random.choice(self.valid_actions)
         
-                        print 'I CHOSE EXPLORATATIVELY'
+                        #print 'I CHOSE EXPLORATATIVELY'
                     if states == state and self.Q[(states)][actions] >= self.get_maxQ(state):
                         #print "2", state
                         #print "2",current_state, qtable[(state)], actions
                         maxQ = actions
                         action = actions
-                        print self.Q[(states)][action], self.get_maxQ(state),'I CHOSE PURPOSEFULLY'
-                    if states == state and self.get_maxQ(state) < 0:
-                        print "AYYYYY",range(self.valid_actions)
-                        action= random.choice(self.valid_actions)
-        print "RANDOM:", rando
+                        #print self.Q[(states)][action], self.get_maxQ(state),'I CHOSE PURPOSEFULLY'
+                        #print 'I CHOSE PURPOSELY'
+#                    if states == state and self.get_maxQ(state) < 0:
+#                        print "AYYYYY",range(self.valid_actions)
+#                        action= random.choice(self.valid_actions)
+        #print "RANDOM:", rando
         return action
 
 
@@ -172,7 +181,7 @@ class LearningAgent(Agent):
         nxstate =  (self.next_waypoint,)    + state[:2]
         self.createQ(state)
         self.createQ(nxstate)
-        print action, nxstate, state,"HOLA@", self.Q[(state)][action]
+        #print action, nxstate, state,"HOLA@", self.Q[(state)][action]
 
         self.Q[(state)][action] = (1-self.alpha)*(self.Q[(state)][action])+self.alpha*(reward)
 
@@ -226,7 +235,7 @@ def run():
     #   display      - set to False to disable the GUI if PyGame is enabled
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
-    sim = Simulator(env, update_delay=.01, log_metrics=True)
+    sim = Simulator(env, update_delay=.00001, display=False, log_metrics=True)
     
     ##############
     # Run the simulator
@@ -234,6 +243,8 @@ def run():
     #   tolerance  - epsilon tolerance before beginning testing, default is 0.05 
     #   n_test     - discrete number of testing trials to perform, default is 0
     sim.run(n_test=10)
+    
+    print "END"
 
 
 if __name__ == '__main__':
