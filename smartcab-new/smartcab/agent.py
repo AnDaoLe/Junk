@@ -132,7 +132,7 @@ class LearningAgent(Agent):
         else:
             for states in self.Q:
                 for actions in self.valid_actions:
-                    if states == state and self.epsilon > rando:
+                    if states == state and self.epsilon > .5:
                         print random.randrange(0,1)
                         #print "2", state
                         #print "2",current_state, qtable[(state)], actions
@@ -146,6 +146,7 @@ class LearningAgent(Agent):
                         action = actions
                         print self.Q[(states)][action], self.get_maxQ(state),'I CHOSE PURPOSEFULLY'
                     if states == state and self.get_maxQ(state) < 0:
+                        print "AYYYYY",range(self.valid_actions)
                         action= random.choice(self.valid_actions)
         print "RANDOM:", rando
         return action
