@@ -1,5 +1,6 @@
 import random
 import math
+import operator
 from environment import Agent, Environment
 from planner import RoutePlanner
 from simulator import Simulator
@@ -84,8 +85,9 @@ class LearningAgent(Agent):
                     #print "2", state
                     #print "2",current_state, qtable[(state)], actions
                     for actions in self.valid_actions:
-                        if maxQ >=  self.Q[(states)][actions]:
-                            maxQ = self.Q[(states)]
+                        if maxQ <=  self.Q[(states)][actions]:
+                            maxQ=self.Q[(states)][actions]
+        #print "maxQ :", maxQ
                     #print 'I CHOSE PURPOSEFULLY'
 
 
@@ -117,7 +119,8 @@ class LearningAgent(Agent):
         # Set the agent state and default action
         self.state = state
         self.next_waypoint = self.planner.next_waypoint()
-
+        #rando = random.uniform(0,1)
+        rando=.5
         ########### 
         ## TO DO ##
         ###########
@@ -129,23 +132,22 @@ class LearningAgent(Agent):
         else:
             for states in self.Q:
                 for actions in self.valid_actions:
-                    if states == state and self.epsilon < random.randrange(0,1):
+                    if states == state and self.epsilon > rando:
                         print random.randrange(0,1)
                         #print "2", state
                         #print "2",current_state, qtable[(state)], actions
                         action= random.choice(self.valid_actions)
         
-                        #print 'I CHOSE PURPOSEFULLY'
-                    if states == state and self.Q[(states)] >= self.get_maxQ(state):
+                        print 'I CHOSE EXPLORATATIVELY'
+                    if states == state and self.Q[(states)][actions] >= self.get_maxQ(state):
                         #print "2", state
                         #print "2",current_state, qtable[(state)], actions
                         maxQ = actions
                         action = actions
-                        #print 'I CHOSE PURPOSEFULLY'
-                    else:
-                        action = random.choice(self.valid_actions)
-
-    
+                        print self.Q[(states)][action], self.get_maxQ(state),'I CHOSE PURPOSEFULLY'
+                    if states == state and self.get_maxQ(state) < 0:
+                        action= random.choice(self.valid_actions)
+        print "RANDOM:", rando
         return action
 
 
@@ -164,6 +166,7 @@ class LearningAgent(Agent):
         nxstate = ()
         for x,y in inputs.items():
             nxstate = nxstate + (y,)
+            #print x,y
             #print state
         nxstate =  (self.next_waypoint,)    + state[:2]
         self.createQ(state)
@@ -222,14 +225,14 @@ def run():
     #   display      - set to False to disable the GUI if PyGame is enabled
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
-    sim = Simulator(env, update_delay=.01, log_metrics=True)
+    sim = Simulator(env, update_delay=.001, log_metrics=True)
     
     ##############
     # Run the simulator
     # Flags:
     #   tolerance  - epsilon tolerance before beginning testing, default is 0.05 
     #   n_test     - discrete number of testing trials to perform, default is 0
-    sim.run(n_test=10)
+    sim.run(n_test=40)
 
 
 if __name__ == '__main__':
