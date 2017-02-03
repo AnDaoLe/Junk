@@ -152,10 +152,17 @@ class LearningAgent(Agent):
                         action= random.choice(self.valid_actions)
         
                         #print 'I CHOSE EXPLORATATIVELY'
-                    if states == state and self.Q[(states)][actions] >= self.get_maxQ(state):
+                    if states == state and self.Q[(states)][actions] == self.get_maxQ(state):
                         #print "2", state
                         #print "2",current_state, qtable[(state)], actions
-                        maxQ = actions
+                        equal_act = []
+                        equal_act.append(actions)
+                        action = random.choice(equal_act)
+                        
+                    if states == state and self.Q[(states)][actions] > self.get_maxQ(state):
+                        #print "2", state
+                        #print "2",current_state, qtable[(state)], actions
+                        
                         action = actions
                         #print self.Q[(states)][action], self.get_maxQ(state),'I CHOSE PURPOSEFULLY'
                         #print 'I CHOSE PURPOSELY'
