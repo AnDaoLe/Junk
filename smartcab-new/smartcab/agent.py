@@ -30,26 +30,30 @@ class LearningAgent(Agent):
         """ The reset function is called at the beginning of each trial.
             'testing' is set to True if testing trials are being used
             once training trials have completed. """
-
-        # Select the destination as the new location to route to
         self.planner.route_to(destination)
         self.n_test= self.n_test+1
-        self.alpha += 0.025
-        if (self.alpha < 0):
-            self.alpha = 0
-        if (self.alpha > 1):
-            self.alpha = 1
-        ########### 
-        ## TO DO ##
-        ###########
-        # Update epsilon using a decay function of your choice
-        # Update additional class parameters as needed
-        # If 'testing' is True, set epsilon and alpha to 0
-#        self.epsilon = (self.epsilon-.05)
-        #self.epsilon = pow(self.alpha,self.n_test)
-        self.epsilon=math.exp(-.01*self.alpha*self.n_test)
-        if (self.epsilon < 0):
-            self.epsilon = 0
+        if testing==True:
+            self.alpha=0
+            self.epsilon=0
+        if testing==False:
+        # Select the destination as the new location to route to
+
+            self.alpha += 0.005
+            if (self.alpha < 0):
+                self.alpha = 0
+            if (self.alpha > 1):
+                self.alpha = 1
+            ########### 
+            ## TO DO ##
+            ###########
+            # Update epsilon using a decay function of your choice
+            # Update additional class parameters as needed
+            # If 'testing' is True, set epsilon and alpha to 0
+    #        self.epsilon = (self.epsilon-.05)
+            #self.epsilon = pow(self.alpha,self.n_test)
+            self.epsilon=math.exp(-.01*self.alpha*self.n_test)
+            if (self.epsilon < 0):
+                self.epsilon = 0
             
         return None
 
@@ -67,11 +71,12 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Set 'state' as a tuple of relevant data for the agent   
-        state = ()
-        for x,y in inputs.items():
-            state = state + (y,)
-            #print state
-        state =  (self.next_waypoint,)    + state[:2]
+#        state = ()
+#        for x,y in inputs.items():
+#            state = state + (y,)
+#            #print state
+#        state =  (self.next_waypoint,)    + state[:2]
+        state = (waypoint, inputs['light'], inputs['oncoming'])
         #print state, "HOLA",
         return state
 
@@ -126,8 +131,8 @@ class LearningAgent(Agent):
         # Set the agent state and default action
         self.state = state
         self.next_waypoint = self.planner.next_waypoint()
-        #rando = random.uniform(0,1)
-        rando=.35
+        rando = random.uniform(0,1)
+        #rando=.35
         #rando = random.uniform(.1, .3)
         ########### 
         ## TO DO ##
@@ -171,16 +176,16 @@ class LearningAgent(Agent):
         ###########
         # When learning, implement the value iteration update rule
         #   Use only the learning rate 'alpha' (do not use the discount factor 'gamma')
-        nextpt = self.planner.next_waypoint() 
-        inputs = self.env.sense(self)
-        nxstate = ()
-        for x,y in inputs.items():
-            nxstate = nxstate + (y,)
-            #print x,y
-            #print state
-        nxstate =  (self.next_waypoint,)    + state[:2]
+#        nextpt = self.planner.next_waypoint() 
+#        inputs = self.env.sense(self)
+#        nxstate = ()
+#        for x,y in inputs.items():
+#            nxstate = nxstate + (y,)
+#            #print x,y
+#            #print state
+#        nxstate =  (self.next_waypoint,)    + state[:2]
         self.createQ(state)
-        self.createQ(nxstate)
+#        self.createQ(nxstate)
         #print action, nxstate, state,"HOLA@", self.Q[(state)][action]
 
         self.Q[(state)][action] = (1-self.alpha)*(self.Q[(state)][action])+self.alpha*(reward)
