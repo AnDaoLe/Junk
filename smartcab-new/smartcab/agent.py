@@ -140,36 +140,50 @@ class LearningAgent(Agent):
         # When not learning, choose a random action
         # When learning, choose a random action with 'epsilon' probability
         #   Otherwise, choose an action with the highest Q-value for the current state
+#        if not self.learning:
+#            action = random.choice(self.valid_actions)
+#        else:
+#            for states in self.Q:
+#                for actions in self.valid_actions:
+#                    if states == state and self.epsilon > rando:
+#                        #print random.randrange(0,1)
+#                        #print "2", state
+#                        #print "2",current_state, qtable[(state)], actions
+#                        action= random.choice(self.valid_actions)
+#        
+#                        #print 'I CHOSE EXPLORATATIVELY'
+#                    if states == state and self.Q[(states)][actions] == self.get_maxQ(state):
+#                        #print "2", state
+#                        #print "2",current_state, qtable[(state)], actions
+#                        equal_act = []
+#                        equal_act.append(actions)
+#                        action = random.choice(equal_act)
+#                        
+#                    if states == state and self.Q[(states)][actions] > self.get_maxQ(state):
+#                        #print "2", state
+#                        #print "2",current_state, qtable[(state)], actions
+#                        
+#                        action = actions
+#                        #print self.Q[(states)][action], self.get_maxQ(state),'I CHOSE PURPOSEFULLY'
+#                        #print 'I CHOSE PURPOSELY'
+##                    if states == state and self.get_maxQ(state) < 0:
+##                        print "AYYYYY",range(self.valid_actions)
+##                        action= random.choice(self.valid_actions)
+#        #print "RANDOM:", rando
         if not self.learning:
             action = random.choice(self.valid_actions)
         else:
-            for states in self.Q:
-                for actions in self.valid_actions:
-                    if states == state and self.epsilon > rando:
-                        #print random.randrange(0,1)
-                        #print "2", state
-                        #print "2",current_state, qtable[(state)], actions
-                        action= random.choice(self.valid_actions)
-        
-                        #print 'I CHOSE EXPLORATATIVELY'
-                    if states == state and self.Q[(states)][actions] == self.get_maxQ(state):
-                        #print "2", state
-                        #print "2",current_state, qtable[(state)], actions
-                        equal_act = []
-                        equal_act.append(actions)
-                        action = random.choice(equal_act)
-                        
-                    if states == state and self.Q[(states)][actions] > self.get_maxQ(state):
-                        #print "2", state
-                        #print "2",current_state, qtable[(state)], actions
-                        
-                        action = actions
-                        #print self.Q[(states)][action], self.get_maxQ(state),'I CHOSE PURPOSEFULLY'
-                        #print 'I CHOSE PURPOSELY'
-#                    if states == state and self.get_maxQ(state) < 0:
-#                        print "AYYYYY",range(self.valid_actions)
-#                        action= random.choice(self.valid_actions)
-        #print "RANDOM:", rando
+            if rando < self.epsilon:
+                action = random.choice(self.valid_actions)
+
+            else:
+                actionList = []
+                for eachaction in self.valid_actions:
+                    if  self.Q[(state)][eachaction] == self.get_maxQ(state):
+                        actionList.append(eachaction)
+                        action = random.choice(actionList) #this will run multiple times and stop after the last time the same Q value is found
+                    if self.Q[(state)][eachaction] > self.get_maxQ(state):
+                        action = eachaction
         return action
 
 
@@ -191,11 +205,12 @@ class LearningAgent(Agent):
 #            #print x,y
 #            #print state
 #        nxstate =  (self.next_waypoint,)    + state[:2]
-        self.createQ(state)
+        if self.learning==True:
+            self.createQ(state)
 #        self.createQ(nxstate)
         #print action, nxstate, state,"HOLA@", self.Q[(state)][action]
-
-        self.Q[(state)][action] = (1-self.alpha)*(self.Q[(state)][action])+self.alpha*(reward)
+    
+            self.Q[(state)][action] = (1-self.alpha)*(self.Q[(state)][action])+self.alpha*(reward)
 
         return
 
