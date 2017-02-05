@@ -31,12 +31,35 @@ The dataset can be found in the kaggle database section of the competition (link
 The solution can be found using supervised learning methods. With scikit-learn, various methodologies such as KNN, Decision Trees, Supper Vector Machines, and much more can be used for classification of leafs. However, deep learning may be used in conjunction with convulational nueral networks to classify leafs. First, preprocessing must be done. This will include changing the leaf images to more easily identifiable and classifiable images. This could be using edge-detection to determine the general structure of the leaf or by looking at some other feature from the leaves. Also, we will want to separate the sets into a test and training set in order for use to determine the accuracy of our training. After preprocessing is done, this will create the set of features we will want to use with our classifiers. The classifiers range from KNN, SVM, Decision Trees, Deep Convultion Networks, to much more. The classifiers mentioned are likely to give the best results. Tensorflow and Sci-kitlearn will be the essential toolboxes needed to preprocess the data, fit the data into the classifier, and ultimately classifying the data accordingly.
 
 \subsection{Benchmark Model}
-The benchmark model for this problem is scoring below a 30 in the Kaggle Competition. As a note, the score closest to 0 is the best scoring. Another benchmark for this problem is correctly identifying the test set above 85 \% of the time. 
+The benchmark model for this problem is scoring below a 30 in the Kaggle Competition. The Kaggle Competition uses a multi-class logarithmic loss to estimate the score. As a note, the score closest to 0 is the best scoring. Another benchmark for this problem is using an SVM to classify my results and continuing to see if any other classifiers have a similar score. As a note, due to the number of images, deep learning may not prove as beneficial as SVM since deep learning will likely need more images to correctly identify images.
 
 \subsection{Evaluation Metrics}
-Evaluation can be directly made via Kaggle by uploading the kernel or results to the website. Various other evaluation metrics can be used such determining accuracy between the training and test sets. After training the classifier, I will be able to determine the accuracy by using the classifier on the test set.
+Evaluation can be directly made via Kaggle by uploading the kernel or results to the website. The evaluation is based on the log loss as stated in the benchmark model. 
+\begin{equation}
+logloss= -(1/N)\sum_{i=1}^{N}\sum_{i=1}^{M}y_{ij} log(p_{ij})
+\end{equation}
+ ``where N is the number of images in the test set, M is the number of species labels, $log$ is the natural logarithm, $y_{ij}$ is 1 if observation $i$ is in class $j$ and 0 otherwise, and $p_{ij}$ is the predicted probability that observation ii belongs to class $j$.'' Various other evaluation metrics can be used such determining accuracy between the training and test sets and comparing accuracies of different classifiers within one another. 
 
 \subsection{Project Design}
-Project design will follow methodology from the supervised learning class offered by Udacity. This class uses the scikit-learn library and follows a format of preprocessing data, fitting data, and ultimately classifying data for our use.
+Project design will follow methodology from the supervised learning class offered by Udacity. This class uses the scikit-learn library and follows a format of preprocessing data, fitting data, and ultimately classifying data for our use. \newline My workflow will be as follows:
+\newline\newline
+1. Collect dataset from kaggle.
+\newline\newline
+2.Process the dataset in ways previously mentioned.
+\newline\newline
+3. Divide the set into train, validation and test set.
+\newline\newline
+4. Implement the SVM classifier to that dataset.
+\newline\newline
+5. Obtain the results with benchmark by submitting to the kaggle leaderboard and by noting down the accuracy.
+\newline\newline
+6. Chose a different classifier and repeat step 5.
+\newline\newline
+7. Compare results with the other classifiers.
+\newline\newline
+8. Submit the final solution to the Kaggle's leaderboard and to Udacity.
+\newline\newline
+
+After being able to test the SVM classifier to the dataset and understanding how to submit to the kaggle leaderboard, implementing and determining the best classifiers should be relatively simple. 
 
 \end{document}
